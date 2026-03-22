@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+"""Helper: write the new ieee118_res_forecast_build.py content."""
+from pathlib import Path
+
+content = '''#!/usr/bin/env python3
 """
 Build `datasets/ieee118/res_forecast_hourly_24h.csv` from archived raw CSVs.
 
@@ -102,3 +106,8 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+'''
+
+target = Path(__file__).resolve().parent / "ieee118_res_forecast_build.py"
+target.write_text(content)
+print(f"Wrote {target}")
