@@ -1,0 +1,4 @@
+zone_id,zone_name,bus_min,bus_max,dominant_resource,res_bus,res_type,notes
+1,Zone1_Thermal,1,49,thermal,none,none,"Heavy thermal (coal+CCGT+OCGT): 21 generators 3399 MW Pmax. Load 1548 MW. No RES bus."
+2,Zone2_PV,50,73,solar_pv,60,solar_pv,"Mixed thermal + PV @ bus 60 (150 MW Pmax). Load 942 MW. 12 generators 3051 MW Pmax."
+3,Zone3_Wind,74,118,wind,78,wind,"Mixed thermal + wind @ bus 78 (400 MW Pmax). Load 1752 MW. 21 generators 3516 MW Pmax."

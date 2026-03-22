@@ -39,7 +39,13 @@ Common formulations: **weighted sum** \( \omega_1 C_{\mathrm{fuel}} + \omega_2 E
 
 **Joint dispatch:** a real solver **minimizes** your objective subject to **balance & limits**; RES **displaces** thermal. The **benchmark scripts** use **fixed MATPOWER thermal P** + **forecast RES** — they report **components**, not one **optimal** coupled DEED solution.
 
-**Vanilla economic dispatch (implemented):** **`scripts/ieee118_vanilla_dcopf.py`** runs **PYPOWER `rundcpf`** on **`case118`**: **minimum thermal fuel cost** under **DC** power flow, with **fixed RES** injections from the hourly forecast (**full uptake**). This **does** re-dispatch thermal against **network constraints** (DC), unlike the fixed-`Pg` CSV benchmark. **Stage 2:** hourly **thermal CO₂** and **monetized carbon** (from `ieee118_deed_params.csv` + `ieee118_thermal_co2_kg_per_mwh.csv`); optional **`--carbon-price-for-opf`** to put carbon in the **OPF objective**. See **`docs/DATA_AND_RUNBOOK.md` §8–9**.
+**Vanilla economic dispatch (implemented, Stage 1):** **`scripts/ieee118_vanilla_dcopf.py`** runs **PYPOWER `rundcopf`** on **`case118`**: **minimum thermal fuel cost** under **DC** power flow, with **curtailable RES** injections (Pmin=0, Pmax=P_avail). Thermal CO₂ and monetized carbon post-processed. See **`docs/DATA_AND_RUNBOOK.md` §8**.
+
+**True DEED (implemented, Stage 2):** **`scripts/ieee118_deed.py`** runs the full multi-objective problem:
+- **Weighted-sum Pareto sweep**: $\omega \in [0,1]$ maps to effective carbon price $\pi_{\mathrm{eff}} = \frac{\omega}{1-\omega} \cdot \pi_{\mathrm{nom}}$, sweeping 24 h dispatch for each trade-off point.
+- **ε-constraint**: binary search for shadow price $\pi^*$ such that $E_{\mathrm{CO_2}}(\pi^*) \approx \varepsilon$.
+
+**Sanity + AC/DC comparison (implemented):** **`scripts/ieee118_validate_acdc.py`**: 4/4 sanity checks pass; DC OPF underestimates cost by ~4.5% vs AC because it ignores ~133 MW transmission losses. See **`docs/DATA_AND_RUNBOOK.md` §10**.
 
 ---
 
@@ -48,9 +54,9 @@ Common formulations: **weighted sum** \( \omega_1 C_{\mathrm{fuel}} + \omega_2 E
 | Layer | What |
 |-------|------|
 | **Thermal** | Polynomial fuel cost from MATPOWER; default **`Pg`** in `ieee118_gen_dispatch_default.csv`. |
-| **Thermal CO₂** | `ieee118_thermal_co2_kg_per_mwh.csv` (default **520 kg/MWh** illustrative per unit — replace with plant data). |
-| **Carbon price** | `ieee118_deed_params.csv` → `carbon_price_usd_per_tco2` (tunable SCC / shadow price). |
-| **RES** | Buses **60** (PV), **78** (wind), **Pmax 400 MW** each; **`ieee118_res_economics.csv`** — fuel **0**, variable O&M **\$/MWh**, optional curtailment penalty. |
+| **Thermal CO₂** | `ieee118_thermal_co2_kg_per_mwh.csv` — heterogeneous: coal_steam=**820**, gas_ccgt=**400**, gas_ocgt=**550** kg/MWh (12/7/35 units). |
+| **Carbon price** | `ieee118_deed_params.csv` → `carbon_price_usd_per_tco2` = **$85/tCO₂** (tunable SCC / shadow price). |
+| **RES** | Bus **60** PV Pmax **150 MW**, bus **78** wind Pmax **400 MW**; curtailable (Pmin=0); `ieee118_res_economics.csv` — fuel **0**, variable O&M **\$/MWh**. |
 
 Full LCOE (CAPEX, discounting) is **not** embedded unless you collapse it to one **\$/MWh**.
 

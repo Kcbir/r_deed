@@ -1,8 +1,12 @@
 #!/usr/bin/env python3
+"""Helper: overwrite ieee118_vanilla_dcopf.py with curtailable-RES version."""
+from pathlib import Path
+
+content = '''#!/usr/bin/env python3
 """
 IEEE 118 — vanilla economic dispatch via DC OPF (minimum fuel cost).
 
-Stage 1: fuel-only DC OPF (PYPOWER case118 + rundcopf).
+Stage 1: fuel-only DC OPF (PYPOWER case118 + rundcpf).
 Stage 2: carbon-weighted OPF (add pi*e_i/1000 to thermal c1).
 
 RES (PV @ bus 60, wind @ bus 78):
@@ -25,7 +29,7 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-from pypower.api import case118, ppoption, rundcopf
+from pypower.api import case118, ppoption, rundcpf
 from pypower.idx_cost import COST, NCOST
 from pypower.idx_gen import GEN_BUS, GEN_STATUS, PG, PMAX, PMIN, QMAX, QMIN
 from pypower.totcost import totcost
@@ -117,8 +121,7 @@ def run_hour(
 ) -> tuple[dict | None, bool]:
     gc_opf = gencost_fuel_only if gencost_for_opf is None else gencost_for_opf
     ppc = _build_ppc_with_res(ppc_base, p_pv_mw, p_wind_mw, gencost_override=gc_opf)
-    result = rundcopf(ppc, ppopt)
-    success = bool(result.get("success", False))
+    result, success = rundcpf(ppc, ppopt)
     if not success:
         return None, False
     result["_n_thermal"] = ppc["_n_thermal"]
@@ -264,9 +267,14 @@ def main() -> None:
     print(out.to_string(index=False))
     print()
     print(summary.to_string(index=False))
-    print(f"\nWrote {out_path}")
+    print(f"\\nWrote {out_path}")
     print(f"Wrote {sum_path}")
 
 
 if __name__ == "__main__":
     main()
+'''
+
+target = Path(__file__).resolve().parent / "ieee118_vanilla_dcopf.py"
+target.write_text(content)
+print(f"Wrote {target}")

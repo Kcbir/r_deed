@@ -1,0 +1,5 @@
+check,computed,stored,delta_pct,passed,opf_usd,matpower_default_usd,ratio,n_generators,violations,Pg_MW,Pd_MW,imbalance_mw,imbalance_pct
+baseline_cost_match,131321.990723608,131322.00002881637,7.085795499929827e-06,True,,,,,,,,,
+opf_improves_at_h6,,,,True,118261.88147389382,131322.00002881637,0.9005488908784763,,,,,,
+gen_limits_DC_h12,,,,True,,,,56.0,0.0,,,,
+power_balance_DC_h12,,,,True,,,,,,4241.999999999999,4242.0,9.094947017729282e-13,2.1440233422275536e-14
