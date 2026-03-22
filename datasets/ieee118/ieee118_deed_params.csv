@@ -1,0 +1,4 @@
+param,value,unit,notes
+carbon_price_usd_per_tco2,85.0,USD/tCO2,"Tunable shadow price / social cost of carbon (policy & SCC studies often ~40–190 USD/tCO2). Scales thermal environmental $."
+thermal_co2_kg_per_mwh_default,520.0,kg CO2/MWh,"Fallback if per-gen file missing row. Illustrative fossil fleet average; replace with unit data."
+res_operational_co2_kg_per_mwh,0.0,kg CO2/MWh,"Hourly dispatch: RES operational CO2 = 0 (LCA is separate)."

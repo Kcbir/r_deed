@@ -1,0 +1,3 @@
+bus,resource,fuel_usd_per_mwh,variable_om_usd_per_mwh,curtailment_penalty_usd_per_mwh,notes
+60,solar_pv,0,8.0,0.0,"Zero fuel. variable_om is a tunable proxy for variable O&M or LCOE-derived marginal $/MWh (typical utility-scale PV often ~5–15 USD/MWh in public ATB-style tables; replace with your value)."
+78,wind,0,10.0,0.0,"Zero fuel. variable_om proxy for wind (~8–15 USD/MWh order of magnitude in many references; replace with your value). curtailment_penalty applies to max(0,P_avail-P_dispatch) when you optimize."

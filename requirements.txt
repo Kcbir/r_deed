@@ -1,0 +1,5 @@
+# Pinned for reproducibility (Stage 1). PYPOWER needs NumPy 1.x on many installs.
+numpy==1.26.4
+scipy==1.17.1
+pandas==3.0.1
+PYPOWER==5.1.19

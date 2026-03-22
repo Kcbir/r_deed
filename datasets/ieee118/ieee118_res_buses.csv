@@ -1,0 +1,3 @@
+bus,resource,pmax_mw,pmin_mw,case118_pd_mw,rationale
+60,solar_pv,400,0,78.0,"PQ load bus with high Pd (MATPOWER case118). PV aggregated at this bus; Pmax = 400 MW (~9.4% of system total load 4242 MW)."
+78,wind,400,0,71.0,"PQ load bus with high Pd (MATPOWER case118). Wind aggregated at this bus; Pmax = 400 MW (~9.4% of system total load 4242 MW)."

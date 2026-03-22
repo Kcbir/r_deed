@@ -1,0 +1,2 @@
+case,thermal_cost_usd_per_h,thermal_cost_usd_per_day_24h_constant,n_generators,source
+IEEE118_MATPOWER_case118_default_dispatch,131322.00002881637,3151728.0006915927,54,MATPOWER data/case118.m mpc.gen + mpc.gencost
