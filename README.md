@@ -1,51 +1,77 @@
-# RMS — IEEE 118 DEED / OPF baseline
+# RMS — Resource Management System
 
-This repository is consolidated on **IEEE 118-bus** data and scripts only.
+**Hierarchical DEED & ParetoFlow Optimization for Real-Time Grid Dispatch**
 
-## Layout
+A research-grade power systems engine built on the IEEE 118-bus benchmark. RMS tackles the Dynamic Economic Emission Dispatch (DEED) problem as a two-layer optimization: a macroscopic Pareto search that maps the full fuel-vs-emission trade-off frontier, and a cooperative multi-agent reinforcement learning layer that executes real-time, constraint-satisfying dispatch decisions derived from that frontier.
 
-| Path | Purpose |
-|------|---------|
-| `datasets/ieee118/` | Network (CDF/PSP), `gencost`, default thermal dispatch; **RES:** `ieee118_res_buses.csv`, `res_forecast_hourly_24h.csv` |
-| `scripts/ieee118_thermal_benchmark.py` | Writes `outputs/ieee118_thermal_benchmark_summary.csv` |
-| `scripts/ieee118_res_forecast_build.py` | Regenerates `res_forecast_hourly_24h.csv` from `archive/` |
-| `scripts/ieee118_system_cost_benchmark.py` | Thermal + RES O&M **component** costs → `outputs/ieee118_system_cost_benchmark.csv` |
-| `scripts/ieee118_vanilla_dcopf.py` | **Vanilla DC OPF** (min fuel, `rundcopf`) + curtailable RES → `outputs/ieee118_vanilla_dcopf_*.csv` |
-| `scripts/ieee118_deed.py` | **True DEED**: weighted-sum Pareto + ε-constraint trade-off → `outputs/ieee118_deed_*.csv` |
-| `scripts/ieee118_validate_acdc.py` | **Sanity checks** + AC vs DC OPF comparison → `outputs/ieee118_acdc_*.csv` |
-| `requirements.txt` | **NumPy 1.x + PYPOWER** (needed for DC OPF) |
-| `docs/` | **`STRATEGY.md`** (why / DEED story), **`DATA_AND_RUNBOOK.md`** (datasets, scripts, outputs) |
-| `archive/non_ieee118_raw/` | Raw PV/meteo CSVs used to **build** the RES forecast (see docs) |
+For full technical write-up, methodology, and results, visit **[kabir.codes](https://kabir.codes)**.
 
-## Quick run
+---
 
-```bash
-conda activate aniate   # Python 3.10, NumPy 1.26.4, PYPOWER 5.1.19
-python3 scripts/ieee118_thermal_benchmark.py
-python3 scripts/ieee118_res_forecast_build.py
-python3 scripts/ieee118_system_cost_benchmark.py
-python3 scripts/ieee118_vanilla_dcopf.py
-python3 scripts/ieee118_deed.py --n-points 20 --plot
-python3 scripts/ieee118_validate_acdc.py --plot
-git tag rms-v2-deed   # after a reproducible commit
+## What it does
+
+The core problem is non-trivial: power grid dispatch must simultaneously minimize fuel cost and carbon emissions, subject to hard physical constraints, across a continuous and non-convex operating space. Standard single-objective solvers collapse this trade-off into a scalar, discarding information. RMS does not.
+
+**Macro layer (ParetoFlow / CSO).** A population-based Pareto search computes the exact non-dominated frontier across the cost-emission space. Operating points on this frontier are mathematically guaranteed to be Pareto-optimal — no improvement in one objective is possible without degrading the other.
+
+**Micro layer (MARL).** A cooperative multi-agent RL system takes a selected Pareto target and translates it into per-generator dispatch setpoints. Convex relaxations of the AC power flow equations make the constraint set tractable; entropy regularization in the policy search prevents premature convergence and keeps routing decisions mathematically bounded.
+
+---
+
+## Repository layout
+
+```
+scripts/
+  ieee118_deed.py               # Core DEED engine
+  ieee118_macro_cso.py          # Macro-layer Pareto / CSO search
+  ieee118_micro_marl.py         # Micro-layer cooperative MARL dispatch
+  ieee118_validate_acdc.py      # AC/DC power flow validation
+  ieee118_optimization_compare.py  # Solver benchmark comparisons
+  ieee118_vanilla_dcopf.py      # Baseline DC-OPF reference
+  ieee118_res_forecast_build.py # Renewable generation forecasting
+  ieee118_system_cost_benchmark.py
+  ieee118_thermal_benchmark.py
+datasets/                       # IEEE 118-bus case data
+outputs/                        # Pareto fronts, dispatch traces, plots
+docs/
 ```
 
-> **Environment:** Use `conda activate aniate` (not base). Base conda has NumPy 2.x which is incompatible with PYPOWER.
+---
 
-## Key results (May 13, 24 h, IEEE 118-bus)
+## Stack
 
-| Mode | Fuel $/day | CO₂ t/day | Notes |
-|------|-----------|-----------|-------|
-| MATPOWER default | ~$3,152,000 | ~95,000 | Fixed dispatch baseline |
-| Fuel-only OPF (π=0) | $2,942,000 | 79,498 | 7% cheaper than default |
-| Social OPF (π=$85/tCO₂) | $3,955,000 | 54,678 | 31% less CO₂ |
-| AC eval (at DC dispatch) | $3,075,000 | 82,122 | DC undercounts by ~4.5% (133 MW losses) |
+| Library | Role |
+|---|---|
+| `PYPOWER 5.1.19` | AC/DC power flow solver, IEEE 118-bus case |
+| `NumPy 1.26.4` | Numerical core, matrix operations |
+| `SciPy 1.17.1` | Convex relaxations, optimization primitives |
+| `pandas 3.0.1` | Dataset handling, results logging |
 
-## Documentation (long-form)
+---
 
-- **`docs/STRATEGY.md`** — objectives, scale, economics story.
-- **`docs/DATA_AND_RUNBOOK.md`** — every dataset, script, output, tuning knobs.
+## Quickstart
 
-## Citation
+```bash
+git clone https://github.com/Kcbir/RMS.git
+cd RMS
+pip install -r requirements.txt
 
-- IEEE 118: UW / IEEE test case archives; MATPOWER `case118.m` for default dispatch and `gencost`.
+# Run the full DEED pipeline
+python scripts/ieee118_deed.py
+
+# Run the macro-layer Pareto search
+python scripts/ieee118_macro_cso.py
+
+# Run the micro-layer MARL dispatch
+python scripts/ieee118_micro_marl.py
+```
+
+---
+
+## Further reading
+
+Architecture details, mathematical formulations, and experimental results are documented at **[kabir.codes](https://kabir.codes)**.
+
+---
+
+*Python 3.10+ recommended. Pinned dependencies in `requirements.txt` for full reproducibility.*
