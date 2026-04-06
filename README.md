@@ -4,8 +4,6 @@
 
 A Python-based optimization engine for solving the Dynamic Economic Emission Dispatch problem across multi-generator power grids, built on the IEEE 118-bus benchmark. It computes the full Pareto frontier of non-dominated operating solutions — giving operators a rigorous, continuous menu of cost-emission trade-offs rather than a single fixed answer.
 
-Full technical write-up, methodology, and results at **[kabir.codes](https://kabir.codes)**.
-
 ---
 
 ## What it does
@@ -64,8 +62,6 @@ python scripts/ieee118_macro_cso.py
 python scripts/ieee118_micro_marl.py
 ```
 
-Python 3.10+ recommended.
+Python 3.14+ recommended.
 
 ---
-
-More details at **[kabir.codes](https://kabir.codes)**.
