@@ -1,8 +1,8 @@
-# RMS — Resource Management System
+# DEED — Dynamic Economic Emission Dispatch
 
-**Hierarchical DEED & ParetoFlow Optimization | Multi-Agent RL | Convex Optimization | Pareto Search**
+**Hierarchical ParetoFlow Optimization | Multi-Agent RL | Convex Optimization | Pareto Search**
 
-A research-grade power systems engine built on the IEEE 118-bus benchmark. RMS solves the Dynamic Economic Emission Dispatch (DEED) problem as a two-layer optimization over non-convex, continuous fuel-emission trade-off spaces.
+A Python-based optimization engine for solving the Dynamic Economic Emission Dispatch problem across multi-generator power grids, built on the IEEE 118-bus benchmark. It computes the full Pareto frontier of non-dominated operating solutions — giving operators a rigorous, continuous menu of cost-emission trade-offs rather than a single fixed answer.
 
 Full technical write-up, methodology, and results at **[kabir.codes](https://kabir.codes)**.
 
@@ -12,11 +12,11 @@ Full technical write-up, methodology, and results at **[kabir.codes](https://kab
 
 Grid dispatch has a fundamental tension: minimizing fuel cost and minimizing carbon emissions are competing objectives, and the feasible space is non-convex. Classical OPF ignores this entirely.
 
-RMS handles it in two cooperating layers.
+This system handles it in two cooperating layers.
 
-**Macro layer.** A population-based Pareto search (ParetoFlow / CSO) computes the exact non-dominated frontier across the cost-emission space. Every point on this frontier is a mathematically valid operating target, no approximations.
+**Macro layer.** A population-based Pareto search (ParetoFlow / CSO) computes the exact non-dominated frontier across the cost-emission space. Every point on this frontier is a mathematically valid operating configuration — no scalarization, no collapsed objectives.
 
-**Micro layer.** A cooperative multi-agent reinforcement learning system takes a selected Pareto target from the macro layer and translates it into per-generator dispatch setpoints in real time. Convex relaxations of the AC power flow equations and entropy-regularized policy search keep the solution both physically feasible and computationally tractable.
+**Micro layer.** A cooperative multi-agent reinforcement learning system takes a selected Pareto target from the macro layer and translates it into per-generator dispatch setpoints in real time. Convex relaxations keep the search tractable; entropy regularization keeps exploration honest.
 
 The two layers compose into a clean hierarchical dispatch engine: the macro layer sets the strategic trade-off, the micro layer executes it.
 
